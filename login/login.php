@@ -2,6 +2,7 @@
 session_start();
 include '../config.php'; // Make sure your database connection is correct
 
+// dummy change
 $email = $password = "";
 $email_err = $password_err = $login_err = "";
 
