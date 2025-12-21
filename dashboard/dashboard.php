@@ -1,12 +1,45 @@
- 
- <?php
- session_start();
+<?php
+session_start();
+
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login/login.php");
     exit;
 }
 
-  include'recent_activities.php' ?>
+include "../config.php";
+include "recent_activities.php";
+
+/* TOTAL REPORTS */
+$totalReports = $conn->query("SELECT COUNT(*) AS total FROM items")
+                     ->fetch_assoc()['total'];
+
+/* LOST ITEMS */
+$lostCount = $conn->query("SELECT COUNT(*) AS total FROM items WHERE report_type='lost'")
+                  ->fetch_assoc()['total'];
+
+/* FOUND ITEMS */
+$foundCount = $conn->query("SELECT COUNT(*) AS total FROM items WHERE report_type='found'")
+                   ->fetch_assoc()['total'];
+
+/* POTENTIAL MATCH COUNT */
+$matchSql = "
+SELECT COUNT(*) AS total
+FROM items l
+JOIN items f
+ON (
+    LOWER(l.item_name) LIKE CONCAT('%', SUBSTRING_INDEX(LOWER(f.item_name), ' ', -1), '%')
+    OR
+    LOWER(f.item_name) LIKE CONCAT('%', SUBSTRING_INDEX(LOWER(l.item_name), ' ', -1), '%')
+)
+WHERE l.report_type = 'lost'
+  AND f.report_type = 'found'
+  AND l.item_id <> f.item_id
+";
+
+$matchResult = $conn->query($matchSql);
+$matchCount = $matchResult ? $matchResult->fetch_assoc()['total'] : 0;
+?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -34,19 +67,24 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     <div class="stats">
       <div class="card" data-page="dashboard">
         <p>Total Reports</p>
-        <h2 id="totalReports">0</h2>
+      <h2><?= $totalReports ?></h2>
+
       </div>
       <div class="card" data-page="lost">
         <p>Lost Items</p>
-        <h2 id="lostCount">0</h2>
+       <h2><?= $lostCount ?></h2>
+
       </div>
       <div class="card" data-page="found">
         <p>Found Items</p>
-        <h2 id="foundCount">0</h2>
+        <h2><?= $foundCount ?></h2>
+
       </div>
       <div class="card" data-page="match">
         <p>Potential Matches</p>
-        <h2 id="matchCount">0</h2>
+        <h2><?= $matchCount ?></h2>
+
+
       </div>
     </div>
 

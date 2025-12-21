@@ -266,6 +266,9 @@ footer a:hover {
             <a class="nav-link active" aria-current="page" href="homepage.html">Home</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link" href="report_item.php">Report Item</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" href="browse_items.html">Browse Items</a>
           </li>
           <li class="nav-item">
