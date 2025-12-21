@@ -1,4 +1,7 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 $currentPage = basename($_SERVER['PHP_SELF']);
 ?>
 
@@ -20,10 +23,10 @@ $currentPage = basename($_SERVER['PHP_SELF']);
 
     <div>
       <div class="profile">
-        <div class="avatar">A</div>
+        <div class="avatar"><?= strtoupper(substr($_SESSION['fullname'] ?? 'A', 0, 1)) ?></div>
         <div>
-          <h4>Admin User</h4>
-          <p>admin@findit.com</p>
+          <h4><?= htmlspecialchars($_SESSION['fullname'] ?? 'Admin User') ?></h4>
+          <p><?= htmlspecialchars($_SESSION['email'] ?? 'admin@findit.com') ?></p>
         </div>
       </div>
 
@@ -40,18 +43,18 @@ $currentPage = basename($_SERVER['PHP_SELF']);
           <i class="bi bi-check-circle"></i> Found Reports
         </a>
 
-        <a class="nav-link <?= $currentPage=='match.php'?'active':'' ?>" href="match.php">
+        <a class="nav-link <?= ($currentPage=='match.php' || $currentPage=='match')?'active':'' ?>" href="match.php">
           <i class="bi bi-search"></i> Match Reports
         </a>
 
-        <a class="nav-link <?= $currentPage=='users.php'?'active':'' ?>" href="user_manage.php">
+        <a class="nav-link <?= ($currentPage=='user_manage.php' || $currentPage=='users.php')?'active':'' ?>" href="user_manage.php">
           <i class="bi bi-people"></i> User Management
         </a>
       </nav>
     </div>
 
     <div class="logout">
-      <a href="../login/login.php" onclick="return confirm('Are you sure you want to logout?');">
+      <a href="../login/logout.php" onclick="return confirm('Are you sure you want to logout?');">
         <i class="bi bi-box-arrow-right"></i> Logout
       </a>
     </div>

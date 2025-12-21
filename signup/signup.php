@@ -7,17 +7,16 @@ $error = "";
 // Run only when form is submitted
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $fullname = trim($_POST['name']);
+    $name = trim($_POST['name']);
     $email = trim($_POST['email']);
-    $phone = trim($_POST['phone']);
+    $phone = trim($_POST['phone'] ?? ''); // Phone is optional since DB doesn't have it
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
 
     // Server-side validation
     if (
-        empty($fullname) ||
+        empty($name) ||
         empty($email) ||
-        empty($phone) ||
         empty($password) ||
         empty($confirm_password)
     ) {
@@ -27,42 +26,52 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     } else {
 
         // Check if email already exists
-        $check = $conn->prepare("SELECT user_id FROM users WHERE email = ?");
-        $check->bind_param("s", $email);
-        $check->execute();
-        $check->store_result();
-
-        if ($check->num_rows > 0) {
-            $error = "Email already registered.";
+        $check = $conn->prepare("SELECT id FROM users WHERE email = ?");
+        if ($check === false) {
+            $error = "Database error: " . $conn->error;
         } else {
+            $check->bind_param("s", $email);
+            $check->execute();
+            $check->store_result();
 
-            // Hash password
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-            // Insert user
-            $insert = $conn->prepare(
-                "INSERT INTO users (fullname, email, phone, password) VALUES (?, ?, ?, ?)"
-            );
-            $insert->bind_param(
-                "ssss",
-                $fullname,
-                $email,
-                $phone,
-                $hashed_password
-            );
-
-            if ($insert->execute()) {
-                // Redirect after successful signup
-                header("Location: ../login/login.php");
-                exit();
+            if ($check->num_rows > 0) {
+                $error = "Email already registered.";
             } else {
-                $error = "Something went wrong. Please try again.";
+
+                // Hash password
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+                // Insert user (note: phone field doesn't exist in DB, so we only insert name, email, password)
+                $insert = $conn->prepare(
+                    "INSERT INTO users (name, email, password) VALUES (?, ?, ?)"
+                );
+                if ($insert === false) {
+                    $error = "Database error: " . $conn->error;
+                } else {
+                    $insert->bind_param(
+                        "sss",
+                        $name,
+                        $email,
+                        $hashed_password
+                    );
+
+                    if ($insert->execute()) {
+                        // Redirect after successful signup
+                        header("Location: ../login/login.php");
+                        exit();
+                    } else {
+                        $error = "Something went wrong. Please try again.";
+                    }
+                    $insert->close();
+                }
             }
+            $check->close();
         }
     }
 }
 
-$conn->close();
+// Don't close connection here - it might be needed for error display
+// $conn->close();
 ?>
 
 <!-- Error Message -->

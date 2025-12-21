@@ -10,34 +10,81 @@ include "../config.php";
 include "recent_activities.php";
 
 /* TOTAL REPORTS */
-$totalReports = $conn->query("SELECT COUNT(*) AS total FROM items")
-                     ->fetch_assoc()['total'];
+$totalResult = $conn->query("SELECT COUNT(*) AS total FROM items");
+if ($totalResult === false) {
+    $totalReports = 0;
+    error_log("Dashboard Error: " . $conn->error);
+} else {
+    $totalReports = $totalResult->fetch_assoc()['total'];
+}
 
 /* LOST ITEMS */
-$lostCount = $conn->query("SELECT COUNT(*) AS total FROM items WHERE report_type='lost'")
-                  ->fetch_assoc()['total'];
+// Use status column (from database schema)
+$lostResult = $conn->query("SELECT COUNT(*) AS total FROM items WHERE status='lost'");
+if ($lostResult === false) {
+    // Fallback: try report_type if status doesn't exist
+    $lostResult = $conn->query("SELECT COUNT(*) AS total FROM items WHERE report_type='lost'");
+}
+if ($lostResult === false) {
+    $lostCount = 0;
+    error_log("Dashboard Error (Lost): " . $conn->error);
+} else {
+    $lostCount = $lostResult->fetch_assoc()['total'];
+}
 
 /* FOUND ITEMS */
-$foundCount = $conn->query("SELECT COUNT(*) AS total FROM items WHERE report_type='found'")
-                   ->fetch_assoc()['total'];
+$foundResult = $conn->query("SELECT COUNT(*) AS total FROM items WHERE status='found'");
+if ($foundResult === false) {
+    // Fallback: try report_type if status doesn't exist
+    $foundResult = $conn->query("SELECT COUNT(*) AS total FROM items WHERE report_type='found'");
+}
+if ($foundResult === false) {
+    $foundCount = 0;
+    error_log("Dashboard Error (Found): " . $conn->error);
+} else {
+    $foundCount = $foundResult->fetch_assoc()['total'];
+}
 
 /* POTENTIAL MATCH COUNT */
+// Use status and title columns (from database schema)
 $matchSql = "
 SELECT COUNT(*) AS total
 FROM items l
 JOIN items f
 ON (
-    LOWER(l.item_name) LIKE CONCAT('%', SUBSTRING_INDEX(LOWER(f.item_name), ' ', -1), '%')
+    LOWER(l.title) LIKE CONCAT('%', SUBSTRING_INDEX(LOWER(f.title), ' ', -1), '%')
     OR
-    LOWER(f.item_name) LIKE CONCAT('%', SUBSTRING_INDEX(LOWER(l.item_name), ' ', -1), '%')
+    LOWER(f.title) LIKE CONCAT('%', SUBSTRING_INDEX(LOWER(l.title), ' ', -1), '%')
 )
-WHERE l.report_type = 'lost'
-  AND f.report_type = 'found'
-  AND l.item_id <> f.item_id
+WHERE l.status = 'lost'
+  AND f.status = 'found'
+  AND l.id <> f.id
 ";
 
 $matchResult = $conn->query($matchSql);
-$matchCount = $matchResult ? $matchResult->fetch_assoc()['total'] : 0;
+if ($matchResult === false) {
+    // Fallback: try with item_name and report_type
+    $matchSql = "
+    SELECT COUNT(*) AS total
+    FROM items l
+    JOIN items f
+    ON (
+        LOWER(l.item_name) LIKE CONCAT('%', SUBSTRING_INDEX(LOWER(f.item_name), ' ', -1), '%')
+        OR
+        LOWER(f.item_name) LIKE CONCAT('%', SUBSTRING_INDEX(LOWER(l.item_name), ' ', -1), '%')
+    )
+    WHERE l.report_type = 'lost'
+      AND f.report_type = 'found'
+      AND l.id <> f.id
+    ";
+    $matchResult = $conn->query($matchSql);
+}
+if ($matchResult === false) {
+    $matchCount = 0;
+    error_log("Dashboard Error (Match): " . $conn->error);
+} else {
+    $matchCount = $matchResult->fetch_assoc()['total'];
+}
 ?>
 
 
@@ -96,12 +143,16 @@ $matchCount = $matchResult ? $matchResult->fetch_assoc()['total'] : 0;
     <div class="recent-activities">
       <h2>Recent Activities</h2>
       <ul>
-        <?php if ($result->num_rows > 0): ?>
+        <?php if (isset($result) && $result && $result->num_rows > 0): ?>
           <?php while ($row = $result->fetch_assoc()): ?>
             <li>
               <span>
-                <?php echo htmlspecialchars($row['report_type']); ?> item reported:
-                <strong><?php echo htmlspecialchars($row['item_name']); ?></strong>
+                <?php 
+                $type = $row['report_type'] ?? $row['status'] ?? 'item';
+                $name = $row['item_name'] ?? $row['title'] ?? 'Unknown';
+                echo htmlspecialchars($type); 
+                ?> item reported:
+                <strong><?php echo htmlspecialchars($name); ?></strong>
               </span>
               <span class="time">
                 <?php echo date("d M Y, h:i A", strtotime($row['created_at'])); ?>

@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,19 +16,45 @@
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg fixed-top bg-white shadow-sm">
     <div class="container">
-      <a class="navbar-brand fw-bold text-primary" href="index.html">
-        <i class="bi bi-search-heart-fill me-2"></i>FindIt - Lost & Found
+      <a class="navbar-brand fw-bold" href="homepage.php">
+        <i class="bi bi-search-heart-fill me-2"></i>FindIt
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-        <ul class="navbar-nav align-items-center">
-          <li class="nav-item"><a class="nav-link" href="report_item.php">Report Item</a></li>
-          <li class="nav-item"><a class="nav-link" href="browse_items.php">Browse Items</a></li>
-          <li class="nav-item"><a class="nav-link" href="contact_us.html">Contact Us</a></li>
-          <li class="nav-item ms-2"><a class="btn btn-outline-primary rounded-pill" href="signup.html">Sign Up</a></li>
-          <li class="nav-item ms-2"><a class="btn btn-primary rounded-pill" href="login.html">Log In</a></li>
+        <ul class="navbar-nav align-items-lg-center">
+          <li class="nav-item">
+            <a class="nav-link" href="homepage.php">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="report_item.php">Report Item</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="browse_items.php">Browse Items</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="contact_us.php">Contact Us</a>
+          </li>
+          <?php if(empty($_SESSION['user_id'])): ?>
+          <!-- Show Sign Up and Log In buttons when user is NOT logged in -->
+          <li class="nav-item ms-lg-3">
+            <a class="btn btn-outline-primary rounded-pill w-100 mt-2 mt-lg-0" href="../signup/signup.php">
+              Sign Up
+            </a>
+          </li>
+          <li class="nav-item ms-lg-2">
+            <a class="btn btn-primary rounded-pill w-100 mt-2 mt-lg-0" href="../login/login.php">Log In</a>
+          </li>
+          <?php else: ?>
+          <!-- Show user info and Logout button when user IS logged in -->
+          <li class="nav-item ms-lg-3">
+            <span class="text-muted me-2">Welcome, <?php echo htmlspecialchars($_SESSION['fullname'] ?? 'User'); ?>!</span>
+          </li>
+          <li class="nav-item ms-lg-2">
+            <a class="btn btn-danger rounded-pill w-100 mt-2 mt-lg-0" href="../login/logout.php">Logout</a>
+          </li>
+          <?php endif; ?>
         </ul>
       </div>
     </div>

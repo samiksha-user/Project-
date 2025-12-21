@@ -1,11 +1,18 @@
 <?php
+session_start();
+
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../login/login.php");
+    exit;
+}
+
 include "../config.php";
 
 // Handle user deletion
 if(isset($_GET['delete_id'])){
     $delete_id = intval($_GET['delete_id']);
-    $conn->query("DELETE FROM users WHERE user_id = $delete_id");
-    header("Location: admin_users.php");
+    $conn->query("DELETE FROM users WHERE id = $delete_id");
+    header("Location: user_manage.php");
     exit;
 }
 
@@ -13,14 +20,14 @@ if(isset($_GET['delete_id'])){
 $sql = "
 
 SELECT 
-  u.user_id,
-  u.fullname AS name,
+  u.id AS user_id,
+  u.name,
   u.email,
-  COUNT(i.item_id) AS reports_filed
+  COUNT(i.id) AS reports_filed
 FROM users u
-LEFT JOIN items i ON u.user_id = i.user_id
+LEFT JOIN items i ON u.id = i.user_id
 WHERE u.role != 'admin'   -- exclude admin users
-GROUP BY u.user_id
+GROUP BY u.id
 ";
 
 
@@ -108,7 +115,7 @@ tr:hover{
 <script>
 function confirmDelete(userId){
     if(confirm("Are you sure you want to delete this user?")){
-        window.location.href = "admin_users.php?delete_id=" + userId;
+        window.location.href = "user_manage.php?delete_id=" + userId;
     }
 }
 function notifyUser(email){

@@ -24,7 +24,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
     // If no client-side errors, check database
     if(empty($email_err) && empty($password_err)){
-        $sql = "SELECT user_id, email, fullname, password, role FROM users WHERE email='$email' LIMIT 1";
+        $sql = "SELECT id, email, name, password, role FROM users WHERE email='$email' LIMIT 1";
 $result = mysqli_query($conn, $sql);
 
 if(!$result || mysqli_num_rows($result) === 0){
@@ -35,9 +35,9 @@ if(!$result || mysqli_num_rows($result) === 0){
     if(!password_verify($password, $user['password'])){
         $login_err = "Password incorrect";
     } else {
-        $_SESSION['user_id']  = $user['user_id'];
+        $_SESSION['user_id']  = $user['id'];  // Store as user_id in session for compatibility
         $_SESSION['email']    = $user['email'];
-        $_SESSION['fullname'] = $user['fullname'];
+        $_SESSION['fullname'] = $user['name']; // Store as fullname in session for compatibility
         $_SESSION['role']     = $user['role'];
 
         if($user['role'] === 'admin'){

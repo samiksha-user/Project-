@@ -21,7 +21,7 @@ $message = $_POST['message'];
 $sql = "INSERT INTO contact_messages (name, email, message) VALUES ('$name', '$email', '$message')";
 
 if ($conn->query($sql) === TRUE) {
-    echo "<script>alert('Message sent successfully!'); window.location='contact_us.html';</script>";
+    echo "<script>alert('Message sent successfully!'); window.location='homepage/contact_us.php';</script>";
 } else {
     echo "Error: " . $sql . "<br>" . $conn->error;
 }

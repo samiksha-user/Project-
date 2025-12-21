@@ -1,4 +1,10 @@
-<?php include'../config.php'?>
+<?php 
+// Start session only if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+include'../config.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -253,7 +259,7 @@ footer a:hover {
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg fixed-top bg-white shadow-sm">
     <div class="container">
-      <a class="navbar-brand fw-bold" href="index.html">
+      <a class="navbar-brand fw-bold" href="homepage.php">
         <i class="bi bi-search-heart-fill me-2"></i>FindIt
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -263,29 +269,55 @@ footer a:hover {
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav align-items-lg-center">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="homepage.html">Home</a>
+            <a class="nav-link active" aria-current="page" href="homepage.php">Home</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="report_item.php">Report Item</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="browse_items.html">Browse Items</a>
+            <a class="nav-link" href="browse_items.php">Browse Items</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="contact_us.html">Contact Us</a>
+            <a class="nav-link" href="contact_us.php">Contact Us</a>
           </li>
-          <?php if(empty($_SESSION['username'])):?>
-
+          <?php if(empty($_SESSION['user_id'])): ?>
+          <!-- Show Sign Up and Log In buttons when user is NOT logged in -->
           <li class="nav-item ms-lg-3">
             <a class="btn btn-outline-primary rounded-pill w-100 mt-2 mt-lg-0" href="../signup/signup.php">
               Sign Up
             </a>
           </li>
-          <?php endif ?>
-
           <li class="nav-item ms-lg-2">
             <a class="btn btn-primary rounded-pill w-100 mt-2 mt-lg-0" href="../login/login.php">Log In</a>
           </li>
+          <?php else: ?>
+          <!-- Show user info, notifications, and Logout button when user IS logged in -->
+          <?php
+          // Get unread notification count (config.php is already included above)
+          $notification_count = 0;
+          if (isset($_SESSION['user_id']) && isset($conn) && file_exists('../dashboard/create_notification.php')) {
+              include_once '../dashboard/create_notification.php';
+              $notification_count = getUnreadNotificationCount($conn, $_SESSION['user_id']);
+          }
+          ?>
+          <li class="nav-item ms-lg-3">
+            <span class="text-muted me-2">Welcome, <?php echo htmlspecialchars($_SESSION['fullname'] ?? 'User'); ?>!</span>
+          </li>
+          <li class="nav-item ms-lg-2">
+            <a class="btn btn-outline-primary rounded-pill position-relative" href="notifications.php" style="text-decoration: none;">
+              <i class="bi bi-bell"></i> Notifications
+              <?php if ($notification_count > 0): ?>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  <?= $notification_count ?>
+                  <span class="visually-hidden">unread notifications</span>
+                </span>
+              <?php endif; ?>
+            </a>
+          </li>
+          <li class="nav-item ms-lg-2">
+            <a class="btn btn-danger rounded-pill w-100 mt-2 mt-lg-0" href="../login/logout.php">Logout</a>
+          </li>
+          <?php endif; ?>
         </ul>
       </div>
     </div>

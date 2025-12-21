@@ -1,20 +1,42 @@
 <?php
+session_start();
+
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../login/login.php");
+    exit;
+}
+
 include "../config.php";
 
 /* DELETE */
 if (isset($_GET['delete'])) {
   $id = intval($_GET['delete']);
-  $stmt = $conn->prepare("DELETE FROM items WHERE item_id = ?");
+  $stmt = $conn->prepare("DELETE FROM items WHERE id = ?");
   $stmt->bind_param("i", $id);
   $stmt->execute();
-  header("Location: lost-reports.php");
+  header("Location: lost_item.php");
   exit;
 }
 
 /* FETCH LOST ITEMS */
-$sql = "SELECT * FROM items WHERE report_type = 'lost' ORDER BY created_at DESC";
+// Try with status column first (from schema), fallback to report_type
+$sql = "SELECT * FROM items WHERE status = 'lost' ORDER BY created_at DESC";
 $result = $conn->query($sql);
-$count = $result->num_rows;
+
+// If query fails, try with report_type
+if ($result === false) {
+    $sql = "SELECT * FROM items WHERE report_type = 'lost' ORDER BY created_at DESC";
+    $result = $conn->query($sql);
+}
+
+// Handle query errors
+if ($result === false) {
+    $count = 0;
+    $error_message = "Database error: " . $conn->error;
+} else {
+    $count = $result->num_rows;
+    $error_message = null;
+}
 ?>
 
 <!DOCTYPE html>
@@ -202,6 +224,13 @@ body {
 <div class="main-content">
   <h3 class="page-title">Lost Reports (<?= $count ?>)</h3>
 
+  <?php if ($error_message): ?>
+    <div class="alert alert-danger">
+      <strong>Error:</strong> <?= htmlspecialchars($error_message) ?>
+      <br><small>Check if your items table has 'status' or 'report_type' column.</small>
+    </div>
+  <?php endif; ?>
+
   <?php if ($count > 0): ?>
   <table class="table reports-table">
     <thead>
@@ -219,11 +248,11 @@ body {
     <tbody>
       <?php while ($row = $result->fetch_assoc()): ?>
       <tr>
-        <td><?= $row['item_id'] ?></td>
+        <td><?= $row['id'] ?? $row['item_id'] ?? 'N/A' ?></td>
 
-        <td><?= htmlspecialchars($row['item_name']) ?></td>
+        <td><?= htmlspecialchars($row['title'] ?? $row['item_name'] ?? 'Unknown') ?></td>
 
-        <td><?= htmlspecialchars($row['description']) ?></td>
+        <td><?= htmlspecialchars($row['description'] ?? 'No description') ?></td>
 
         <td><?= htmlspecialchars($row['color'] ?? 'N/A') ?></td>
 
@@ -238,7 +267,7 @@ body {
         <td><?= date("Y-m-d", strtotime($row['created_at'])) ?></td>
 
         <td>
-          <a href="?delete=<?= $row['item_id'] ?>"
+          <a href="?delete=<?= $row['id'] ?? $row['item_id'] ?>"
              onclick="return confirm('Delete this report?')"
              class="btn btn-danger btn-sm">
              Delete

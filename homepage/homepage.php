@@ -1,8 +1,16 @@
 <?php
 session_start();
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'user') {
-    header("Location: ../login/login.php");
-    exit;
+// Allow both logged in and logged out users to view the homepage
+
+// Load notifications if user is logged in
+$unread_count = 0;
+$notifications = [];
+
+if (isset($_SESSION['user_id'])) {
+    include '../config.php';
+    include_once '../dashboard/create_notification.php';
+    $unread_count = getUnreadNotificationCount($conn, $_SESSION['user_id']);
+    $notifications = getUserNotifications($conn, $_SESSION['user_id'], 5);
 }
 ?>
 
@@ -30,6 +38,19 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'user') {
   <!-- Navbar -->
     <?php require_once "navbar.php"; ?>
  
+  <!-- Notifications Alert -->
+  <?php if (isset($_SESSION['user_id']) && $unread_count > 0): ?>
+  <div class="container mt-5 pt-3">
+    <div class="alert alert-info alert-dismissible fade show" role="alert" style="border-left: 5px solid #0d6efd;">
+      <h5 class="alert-heading">
+        <i class="bi bi-bell-fill me-2"></i>You have <?= $unread_count ?> unread notification<?= $unread_count > 1 ? 's' : '' ?>!
+      </h5>
+      <p class="mb-2">Check your notifications to see if there are any matches for your reported items.</p>
+      <a href="notifications.php" class="btn btn-primary btn-sm">View Notifications</a>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  </div>
+  <?php endif; ?>
 
   <!-- Hero Section -->
   <section class="hero container mt-5 pt-5">
@@ -141,7 +162,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'user') {
         <div class="col-md-2 col-6 mb-4">
           <h5 class="fw-bold mb-3">Support</h5>
           <ul class="list-unstyled">
-            <li><a href="contact_us.html" class="text-decoration-none text-muted">Contact Us</a></li>
+            <li><a href="contact_us.php" class="text-decoration-none text-muted">Contact Us</a></li>
             <li><a href="#" class="text-decoration-none text-muted">FAQ</a></li>
             <li><a href="#" class="text-decoration-none text-muted">Terms of Service</a></li>
           </ul>
