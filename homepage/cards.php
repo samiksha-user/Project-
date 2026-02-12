@@ -39,19 +39,17 @@ $result = $conn->query($sql);
         <?php while($row = $result->fetch_assoc()): ?>
           <div class="col-sm-6 col-md-4 col-lg-3">
             <div class="card h-100">
-              <img src="uploads/<?php echo $row['image'] ?: 'default.png'; ?>" class="card-img-top" alt="<?php echo htmlspecialchars($row['item_name']); ?>">
+              <img src="../uploads/<?php echo $row['image'] ?: 'default.png'; ?>" class="card-img-top" alt="<?php echo htmlspecialchars($row['title']); ?>">
               <div class="card-body d-flex flex-column">
-                <h5 class="card-title"><?php echo htmlspecialchars($row['item_name']); ?></h5>
+                <h5 class="card-title"><?php echo htmlspecialchars($row['title']); ?></h5>
                 <p class="card-text">
                   <?php 
                   $desc = htmlspecialchars($row['description']);
                   echo strlen($desc) > 100 ? substr($desc,0,100).'...' : $desc;
                   ?>
                 </p>
-                <p class="mb-1"><strong>Category:</strong> <?php echo htmlspecialchars($row['report_type']); ?></p>
-                <?php if ($row['color']): ?>
-                  <p class="mb-1"><strong>Color:</strong> <?php echo htmlspecialchars($row['color']); ?></p>
-                <?php endif; ?>
+                <p class="mb-1"><strong>Category:</strong> <?php echo htmlspecialchars($row['status']); ?></p>
+               
                 <small class="text-muted mt-auto"><?php echo date('d M Y', strtotime($row['created_at'])); ?></small>
               </div>
             </div>

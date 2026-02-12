@@ -278,7 +278,7 @@ footer a:hover {
             <a class="nav-link" href="browse_items.php">Browse Items</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="contact_us.php">Contact Us</a>
+            <a class="nav-link" href="view_reports.php">View Reports</a>
           </li>
           <?php if(empty($_SESSION['user_id'])): ?>
           <!-- Show Sign Up and Log In buttons when user is NOT logged in -->

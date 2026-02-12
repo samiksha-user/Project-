@@ -148,26 +148,83 @@ nav a.active {
   color: white;
 }
 
-/* RECENT ACTIVITIES */
+/* RECENT ACTIVITIES (TABLE STYLE) */
 .recent-activities {
   background: rgba(255,255,255,0.7);
-  padding: 20px;
+  padding: 25px;
   border-radius: 20px;
   box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  margin-top: 30px;
 }
 
-.recent-activities ul {
-  list-style: none;
+/* TABLE WRAPPER */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
 }
 
-.recent-activities li {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(0,0,0,0.1);
+/* TABLE */
+.activity-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
 }
 
-.recent-activities .time {
-  color: #6366f1;
+/* TABLE HEADER */
+.activity-table thead {
+  background: #f9fafb;
+}
+
+.activity-table th {
+  padding: 14px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* TABLE BODY */
+.activity-table td {
+  padding: 14px 18px;
+  font-size: 14px;
+  border-top: 1px solid #e5e7eb;
+  vertical-align: middle;
+}
+
+/* ITEM ID */
+.item-id {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+/* STATUS BADGES */
+.status {
+  padding: 6px 14px;
+  border-radius: 999px;
   font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.status.lost {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status.found {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+/* ACTION ICON */
+.action {
+  text-align: center;
+  cursor: pointer;
+  font-size: 18px;
+  color: #9ca3af;
+}
+
+.action:hover {
+  color: #111827;
 }

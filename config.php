@@ -2,7 +2,7 @@
 
 $host     = "127.0.0.1";   
 $username = "root";        
-$password = "root";            
+$password = "";            
 $database = "lost_and_found";     
 
 $conn = new mysqli($host, $username, $password, $database);

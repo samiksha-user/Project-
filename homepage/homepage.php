@@ -68,17 +68,12 @@ if (isset($_SESSION['user_id'])) {
           <!-- <a class="btn btn-lg btn-primary rounded-pill px-5 shadow-sm" href="../signup/signup.html">
             <i class="bi bi-person-add me-2"></i> Sign Up First
           </a> -->
-          <a class="btn btn-lg btn-outline-primary rounded-pill px-5" href="../login/login.php">
+          <a class="btn btn-primary btn-lg px-4 py-2" href="../homepage/report_item.php">
             <i class="bi bi-box-arrow-in-right me-2"></i> Report Item
           </a>
         </div>
 
-        <div class="input-group mt-5 hero-search shadow-sm">
-          <input type="text" class="form-control form-control-lg rounded-start-pill border-0" placeholder="Search existing found items..." aria-label="Search lost items" />
-          <button class="btn btn-primary btn-lg px-4 rounded-end-pill" type="button">
-            <i class="bi bi-search me-2"></i> Search
-          </button>
-        </div>
+      
       </div>
       <div class="col-md-6 order-md-2 order-1 mt-4 mt-md-0 text-center">
         <img src="https://plus.unsplash.com/premium_photo-1661427252330-5581ac8cf8de?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="img-fluid hero-image" alt="people cheering holding found items" />

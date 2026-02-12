@@ -2,7 +2,10 @@
 include '../config.php';
 
 
+
 $error = "";
+
+
 
 // Run only when form is submitted
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -73,6 +76,83 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 // Don't close connection here - it might be needed for error display
 // $conn->close();
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Signup</title>
+
+  <!-- Font Awesome -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+
+  <!-- Notyf -->
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/notyf/notyf.min.css"/>
+
+  <link rel="stylesheet" href="signup.css" />
+</head>
+<body>
+
+
+
+
+<div class="container">
+  <h1>Create Account</h1>
+
+  <form id="Form" action="signup.php" method="POST">
+
+    <div class="input-name">
+      <i class="fa fa-user"></i>
+      <input type="text" name="name" id="name" class="text-name"
+        placeholder="Full Name" required />
+      <small></small>
+    </div>
+
+    <div class="input-name">
+      <i class="fa fa-envelope"></i>
+      <input type="email" name="email" id="email" class="text-name"
+        placeholder="Email Address" required />
+      <small></small>
+    </div>
+
+    <div class="input-name">
+      <i class="fa fa-phone"></i>
+      <input type="tel" name="phone" id="phone" class="text-name"
+        placeholder="Phone Number" required />
+      <small></small>
+    </div>
+
+    <div class="input-name">
+      <i class="fa fa-lock"></i>
+      <input type="password" name="password" id="password"
+        class="text-name" placeholder="Password" required />
+      <small></small>
+    </div>
+
+    <div class="input-name">
+      <i class="fa fa-lock"></i>
+      <input type="password" name="confirm_password" id="cpassword"
+        class="text-name" placeholder="Confirm Password" required />
+      <small></small>
+    </div>
+
+    <input type="submit" value="Sign Up" />
+
+    <p class="extra-text">
+      Already have an account?
+      <a href="../login/login.php">Login</a>
+    </p>
+  </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/notyf/notyf.min.js"></script>
+<script src="./signup.js"></script>
+</body>
+</html>
 
 <!-- Error Message -->
 <?php if (!empty($error)) : ?>

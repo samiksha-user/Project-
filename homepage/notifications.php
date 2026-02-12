@@ -86,10 +86,34 @@ $unread_count = getUnreadNotificationCount($conn, $_SESSION['user_id']);
         <?php if (count($notifications) > 0): ?>
           <div class="list-group">
             <?php foreach ($notifications as $notification): ?>
+              <?php
+              // Extract item name from notification message
+              preg_match("/'(.*?)'/", $notification['message'], $matches);
+              $item_name = $matches[1] ?? '';
+
+              // Fetch item details
+              $item = null;
+              if($item_name != '') {
+                  $stmt = $conn->prepare("SELECT * FROM items WHERE title LIKE ? LIMIT 1");
+                  $search_name = "%$item_name%";
+                  $stmt->bind_param("s", $search_name);
+                  $stmt->execute();
+                  $result = $stmt->get_result();
+                  $item = $result->fetch_assoc();
+                  $stmt->close();
+              }
+              ?>
               <div class="list-group-item notification-card <?= $notification['is_read'] ? 'read' : 'unread' ?> mb-2 rounded">
                 <div class="d-flex justify-content-between align-items-start">
                   <div class="flex-grow-1">
                     <p class="mb-1"><?= htmlspecialchars($notification['message']) ?></p>
+
+                    <?php if($item): ?>
+                      <a href="view_match.php?item_id=<?= $item['id'] ?>" class="btn btn-sm btn-success mt-2">
+                        <i class="bi bi-eye"></i> View Matched Details
+                      </a>
+                    <?php endif; ?>
+
                     <small class="notification-time">
                       <i class="bi bi-clock me-1"></i><?= date('F j, Y g:i A', strtotime($notification['created_at'])) ?>
                     </small>
@@ -117,4 +141,3 @@ $unread_count = getUnreadNotificationCount($conn, $_SESSION['user_id']);
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-

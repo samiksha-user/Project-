@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($notify_lost_user) {
         // Get lost item and user info
-        $sql = "SELECT i.id, COALESCE(i.title, i.item_name) AS item_name, u.id AS user_id, u.name AS user_name
+        $sql = "SELECT i.id, COALESCE(i.title, i.title) AS item_name, u.id AS user_id, u.name AS user_name
                 FROM items i
                 JOIN users u ON i.user_id = u.id
                 WHERE i.id = ?";
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($notify_found_user) {
         // Get found item and user info
-        $sql = "SELECT i.id, COALESCE(i.title, i.item_name) AS item_name, u.id AS user_id, u.name AS user_name
+        $sql = "SELECT i.id, COALESCE(i.title, i.title) AS item_name, u.id AS user_id, u.name AS user_name
                 FROM items i
                 JOIN users u ON i.user_id = u.id
                 WHERE i.id = ?";

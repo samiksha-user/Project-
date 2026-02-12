@@ -145,7 +145,6 @@ function notifyUser(email){
   <td><?php echo htmlspecialchars($row['email']); ?></td>
   <td><?php echo $row['reports_filed']; ?></td>
   <td>
-    <button class="btn" onclick="notifyUser('<?php echo $row['email']; ?>')">Notify</button>
     <button class="btn delete" onclick="confirmDelete(<?php echo $row['user_id']; ?>)">Delete</button>
   </td>
 </tr>

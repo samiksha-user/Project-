@@ -7,7 +7,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 }
 
 include "../config.php";
-include "recent_activities.php";
+
 
 /* TOTAL REPORTS */
 $totalResult = $conn->query("SELECT COUNT(*) AS total FROM items");
@@ -135,51 +135,13 @@ if ($matchResult === false) {
       </div>
     </div>
 
-
-
-    
     <!-- RECENT ACTIVITIES -->
-      
-    <div class="recent-activities">
-      <h2>Recent Activities</h2>
-      <ul>
-        <?php if (isset($result) && $result && $result->num_rows > 0): ?>
-          <?php while ($row = $result->fetch_assoc()): ?>
-            <li>
-              <span>
-                <?php 
-                $type = $row['report_type'] ?? $row['status'] ?? 'item';
-                $name = $row['item_name'] ?? $row['title'] ?? 'Unknown';
-                echo htmlspecialchars($type); 
-                ?> item reported:
-                <strong><?php echo htmlspecialchars($name); ?></strong>
-              </span>
-              <span class="time">
-                <?php echo date("d M Y, h:i A", strtotime($row['created_at'])); ?>
-              </span>
-            </li>
-          <?php endwhile; ?>
-        <?php else: ?>
-          <li>No recent activities found</li>
-        <?php endif; ?>
-      </ul>
-    </div>
-
-    
- 
-
-
-
-
+ <?php include __DIR__ . "/recent_activities.php"; ?>
 
 
     <!-- DYNAMIC CONTENT -->
     <div id="content"></div>
   </main>
-  
-
-
-  
   
 
 </div>
